@@ -5,22 +5,26 @@ import java.util.*;
 
 public class Solution {
     final static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
 
     static int T, N;
     static int[][] map;
     static boolean[][][] visited;
     static int[] start;
     static int[] end;
-
-    static boolean isValid(int x, int y) {
-        return (x >= 0 && x < N) && (y >= 0 && y < N);
-    }
+    // 상좌우하
+    static int[] dx = {0, -1, 1, 0};
+    static int[] dy = {-1, 0, 0, 1};
 
     public static void main(String[] args) throws IOException {
         T = Integer.parseInt(br.readLine());
         for (int t = 1; t <= T; t++) {
             solve(t);
         }
+    }
+
+    static int nextInt(StringTokenizer st) {
+        return Integer.parseInt(st.nextToken());
     }
 
     static void solve(int t) throws IOException {
@@ -31,29 +35,26 @@ public class Solution {
         end = new int[2];
 
         for (int i = 0; i < N; i++) {
-            map[i] = Arrays.stream(br.readLine().split(" "))
-                    .mapToInt(Integer::parseInt)
-                    .toArray();
-            visited[i] = new boolean[N][3];
-            for (boolean[] v: visited[i]) {
-                Arrays.fill(v, false);
+            st = new StringTokenizer(br.readLine());
+            map[i] = new int[N];
+            for (int j = 0; j < N; j++) {
+                map[i][j] = nextInt(st);
             }
+
+            visited[i] = new boolean[N][3];
         }
 
-        int[] s = Arrays.stream(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .toArray();
-        int[] e = Arrays.stream(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .toArray();
-        start[0] = s[1];
-        start[1] = s[0];
-        
-        end[0] = e[1];
-        end[1] = e[0];
+        st = new StringTokenizer(br.readLine());
+        start[1] = nextInt(st);
+        start[0] = nextInt(st);
+
+        st = new StringTokenizer(br.readLine());
+        end[1] = nextInt(st);
+        end[0] = nextInt(st);
         // ---- end init ----
 
         Queue<int[]> queue = new LinkedList<>();
+
         int sx = start[0], sy = start[1];
         visited[sy][sx][0] = true;
         
@@ -71,23 +72,24 @@ public class Solution {
                 break;
             }
 
-            // 상좌우하
-            int[] dx = {0, -1, 1, 0};
-            int[] dy = {-1, 0, 0, 1};
-
             for (int i = 0; i < dx.length; i++) {
                 int nx = x + dx[i];
                 int ny = y + dy[i];
 
-                if (!isValid(nx, ny)) continue;
+                if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
+
+                // 이미 방문한 칸이면 스킵
                 if (visited[ny][nx][(time + 1) % 3]) continue;
 
                 int neighbor = map[ny][nx];
 
+                // 0(헤엄 가능)이거나
+                // 2(소용돌이)이지만 지금 타이밍에 사라져서 밟을 수 있는 칸이 된 경우
                 if (neighbor == 0 || (neighbor == 2 && time % 3 == 2)) {
                     visited[ny][nx][(time + 1) % 3] = true;
                     queue.add(new int[]{nx, ny, time + 1});
                 }
+                // 2(소용돌이)인 경우 제자리에서 기다려서 다음 번에 재조사
                 else if (neighbor == 2 /* && time % 3 != 2 */) {
                     visited[y][x][(time + 1) % 3] = true;
                     queue.add(new int[]{x, y, time + 1});
