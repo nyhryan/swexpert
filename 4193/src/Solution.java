@@ -9,9 +9,11 @@ public class Solution {
 
     static int T, N;
     static int[][] map;
+    // (시간 % 3) 값이 같은 맵별로 방문여부를 체크하여 최단경로 탐색
     static boolean[][][] visited;
     static int[] start;
     static int[] end;
+
     // 상좌우하
     static int[] dx = {0, -1, 1, 0};
     static int[] dy = {-1, 0, 0, 1};
@@ -53,6 +55,7 @@ public class Solution {
         end[0] = nextInt(st);
         // ---- end init ----
 
+        // BFS 탐색으로 길 찾기
         Queue<int[]> queue = new LinkedList<>();
 
         int sx = start[0], sy = start[1];
@@ -67,6 +70,7 @@ public class Solution {
             int y = data[1];
             int time = data[2];
 
+            // 도착지에 도착한 경우 탐색 종료
             if (x == end[0] && y == end[1]) {
                 resultTime = time;
                 break;
